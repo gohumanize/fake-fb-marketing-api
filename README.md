@@ -39,6 +39,12 @@ export POST_ENGAGEMENT_CAMPAIGN_ID='xxxxxx'
 export PAGE_LIKES_CAMPAIGN_ID='xxxxxx' 
 ```
 
+It may be easier to run foreman with a separate ENV file that will set these values:
+```
+foreman start --f Procfile.dev --env fake.env
+```
+*Note* Foreman is particular about the format of the ENV file and does not support dot_env format (comments, etc.).  This prevents us from using our normal `.env.development` to set variables for the entiree process.
+
 Any calls that create an ad account will return the value in the `FACEBOOK_AD_ACCOUNT_ID`.  
 
 Any campaigns created will return the value in the `XXX_CAMPAIGN_ID` variables.
