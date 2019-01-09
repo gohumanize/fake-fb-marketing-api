@@ -1,0 +1,12 @@
+/.bundle/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+lib/fake_fb_marketing_api/log/
+
+# rspec failure tracking
+.rspec_status

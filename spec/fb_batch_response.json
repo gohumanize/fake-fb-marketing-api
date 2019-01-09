@@ -1,0 +1,110 @@
+[
+   {
+      "code":200,
+      "headers":[
+         {
+            "name":"Content-Type",
+            "value":"text\/javascript; charset=UTF-8"
+         },
+         {
+            "name":"Facebook-API-Version",
+            "value":"v3.0"
+         },
+         {
+            "name":"X-App-Usage",
+            "value":"{\"call_count\":0,\"total_cputime\":0,\"total_time\":0}"
+         },
+         {
+            "name":"ETag",
+            "value":"\"94cbccf14637fc76526fbbc7667bfe1a79cb6630\""
+         },
+         {
+            "name":"Access-Control-Allow-Origin",
+            "value":"*"
+         },
+         {
+            "name":"Cache-Control",
+            "value":"private, no-cache, no-store, must-revalidate"
+         },
+         {
+            "name":"X-FB-Ads-Insights-Throttle",
+            "value":"{\"app_id_util_pct\": 0.00,\"acc_id_util_pct\": 0.00}"
+         },
+         {
+            "name":"Vary",
+            "value":"Accept-Encoding"
+         },
+         {
+            "name":"Expires",
+            "value":"Sat, 01 Jan 2000 00:00:00 GMT"
+         },
+         {
+            "name":"X-Ad-Account-Usage",
+            "value":"{\"acc_id_util_pct\":0}"
+         },
+         {
+            "name":"Strict-Transport-Security",
+            "value":"max-age=15552000; preload"
+         },
+         {
+            "name":"Pragma",
+            "value":"no-cache"
+         }
+      ],
+      "body":"{\"data\":[{\"ad_id\":\"replace_ad_id\",\"date_start\":\"2018-05-30\",\"date_stop\":\"2019-01-06\"}],\"paging\":{\"cursors\":{\"before\":\"MAZDZD\",\"after\":\"MAZDZD\"}}}"
+   },
+   {
+      "code":200,
+      "headers":[
+         {
+            "name":"Content-Type",
+            "value":"text\/javascript; charset=UTF-8"
+         },
+         {
+            "name":"Facebook-API-Version",
+            "value":"v3.0"
+         },
+         {
+            "name":"X-App-Usage",
+            "value":"{\"call_count\":0,\"total_cputime\":0,\"total_time\":0}"
+         },
+         {
+            "name":"ETag",
+            "value":"\"94cbccf14637fc76526fbbc7667bfe1a79cb6630\""
+         },
+         {
+            "name":"Access-Control-Allow-Origin",
+            "value":"*"
+         },
+         {
+            "name":"Cache-Control",
+            "value":"private, no-cache, no-store, must-revalidate"
+         },
+         {
+            "name":"X-FB-Ads-Insights-Throttle",
+            "value":"{\"app_id_util_pct\": 0.00,\"acc_id_util_pct\": 0.00}"
+         },
+         {
+            "name":"Vary",
+            "value":"Accept-Encoding"
+         },
+         {
+            "name":"Expires",
+            "value":"Sat, 01 Jan 2000 00:00:00 GMT"
+         },
+         {
+            "name":"X-Ad-Account-Usage",
+            "value":"{\"acc_id_util_pct\":0}"
+         },
+         {
+            "name":"Strict-Transport-Security",
+            "value":"max-age=15552000; preload"
+         },
+         {
+            "name":"Pragma",
+            "value":"no-cache"
+         }
+      ],
+      "body":"{\"data\":[{\"ad_id\":\"replace_ad_id\",\"date_start\":\"2018-05-30\",\"date_stop\":\"2019-01-06\"}],\"paging\":{\"cursors\":{\"before\":\"MAZDZD\",\"after\":\"MAZDZD\"}}}"
+   }
+]

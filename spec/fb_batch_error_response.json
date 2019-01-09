@@ -1,0 +1,94 @@
+[
+   {
+      "code":404,
+      "headers":[
+         {
+            "name":"Pragma",
+            "value":"no-cache"
+         },
+         {
+            "name":"Strict-Transport-Security",
+            "value":"max-age=15552000; preload"
+         },
+         {
+            "name":"Expires",
+            "value":"Sat, 01 Jan 2000 00:00:00 GMT"
+         },
+         {
+            "name":"Cache-Control",
+            "value":"no-store"
+         },
+         {
+            "name":"Access-Control-Allow-Origin",
+            "value":"*"
+         },
+         {
+            "name":"Vary",
+            "value":"Accept-Encoding"
+         },
+         {
+            "name":"WWW-Authenticate",
+            "value":"OAuth \"Facebook Platform\" \"not_found\" \"(#803) Cannot query users by their username (doesnotexist)\""
+         },
+         {
+            "name":"X-App-Usage",
+            "value":"{\"call_count\":0,\"total_cputime\":0,\"total_time\":0}"
+         },
+         {
+            "name":"Content-Type",
+            "value":"text\/javascript; charset=UTF-8"
+         },
+         {
+            "name":"Facebook-API-Version",
+            "value":"v3.0"
+         }
+      ],
+      "body":"{\"error\":{\"message\":\"(#803) Cannot query users by their username (doesnotexist)\",\"type\":\"OAuthException\",\"code\":803,\"fbtrace_id\":\"BT5rAbba5jr\"}}"
+   },
+   {
+      "code":404,
+      "headers":[
+         {
+            "name":"Pragma",
+            "value":"no-cache"
+         },
+         {
+            "name":"Strict-Transport-Security",
+            "value":"max-age=15552000; preload"
+         },
+         {
+            "name":"Expires",
+            "value":"Sat, 01 Jan 2000 00:00:00 GMT"
+         },
+         {
+            "name":"Cache-Control",
+            "value":"no-store"
+         },
+         {
+            "name":"Access-Control-Allow-Origin",
+            "value":"*"
+         },
+         {
+            "name":"Vary",
+            "value":"Accept-Encoding"
+         },
+         {
+            "name":"WWW-Authenticate",
+            "value":"OAuth \"Facebook Platform\" \"not_found\" \"(#803) Cannot query users by their username (doesnotexist)\""
+         },
+         {
+            "name":"X-App-Usage",
+            "value":"{\"call_count\":0,\"total_cputime\":0,\"total_time\":0}"
+         },
+         {
+            "name":"Content-Type",
+            "value":"text\/javascript; charset=UTF-8"
+         },
+         {
+            "name":"Facebook-API-Version",
+            "value":"v3.0"
+         }
+      ],
+      "body":"{\"error\":{\"message\":\"(#803) Cannot query users by their username (doesnotexist)\",\"type\":\"OAuthException\",\"code\":803,\"fbtrace_id\":\"FPzxIlv5lI6\"}}"
+   }
+]
