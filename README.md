@@ -51,6 +51,13 @@ Any campaigns created will return the value in the `XXX_CAMPAIGN_ID` variables.
  
 ## Notes
 
+### Development
+
+### Test
+
+### Staging
+
+### Production
 ### Limitations
 
 This server forwards all web requests via a Faraday wrapper.  It does not support `keep-alive` `Connection` header.
