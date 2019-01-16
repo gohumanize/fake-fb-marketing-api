@@ -7,10 +7,12 @@ module FakeFbMarketingApi
   class Application < Sinatra::Base
 
     configure do
-      enable :logging
-      file = File.new("#{settings.root}/log/#{settings.environment}.log", 'a+')
-      file.sync = true
-      use Rack::CommonLogger, file
+      if Rails.environment.development?
+        enable :logging
+        file = File.new("#{settings.root}/log/#{settings.environment}.log", 'a+')
+        file.sync = true
+        use Rack::CommonLogger, file
+      end
 
       # setup WeCall
       We::Call.configure do |config|
