@@ -1,7 +1,6 @@
 require 'sinatra'
 require 'faraday'
 require 'we-call'
-require 'pry'
 
 module FakeFbMarketingApi
   class Application < Sinatra::Base
