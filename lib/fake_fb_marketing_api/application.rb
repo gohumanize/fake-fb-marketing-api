@@ -28,7 +28,7 @@ module FakeFbMarketingApi
       end
     end
 
-    post '/v3.0/:business_id/adaccount' do
+    post '/v3.2/:business_id/adaccount' do
       content_type :json
       {
         end_advertiser_id: params[:end_advertiser_id],
@@ -47,7 +47,14 @@ module FakeFbMarketingApi
       }.to_json
     end
 
-    post '/v3.0/:ad_account_id/campaigns' do
+    post '/v3.2/:business_id/businessprojects' do
+      content_type :json
+      {
+        id: ENV['PROJECT_ID']
+      }.to_json
+    end
+
+    post '/v3.2/:ad_account_id/campaigns' do
       content_type :json
       case params[:objective]
       when 'BRAND_AWARENESS'
@@ -77,17 +84,17 @@ module FakeFbMarketingApi
       end
     end
 
-    get '/v3.0/:graph_id/*' do
+    get '/v3.2/:graph_id/*' do
       content_type :json
       proxy_to_fb(request, response)
     end
 
-    post '/v3.0/*' do
+    post '/v3.2/*' do
       content_type :json
       return proxy_post_to_fb(request, response)
     end
 
-    get '/v3.0/*' do
+    get '/v3.2/*' do
       proxy_to_fb(request, response)
     end
 
