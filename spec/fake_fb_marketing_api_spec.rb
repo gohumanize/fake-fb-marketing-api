@@ -111,7 +111,7 @@ RSpec.describe FakeFbMarketingApi::Application do
 
   describe 'POST /:business_id/businessprojects' do
     it 'passes a static project_id' do
-      stub_request(:post, "https://graph.facebook.com/v3.2/#{ENV['BUSINESS_ID']}/businessprojects/?access_token=#{access_token}&name=test_project")
+      stub_request(:post, "https://graph.facebook.com/v3.2/#{ENV['BUSINESS_ID']}/businessprojects?access_token=#{access_token}&name=test_project")
         .to_return(status: 200, body: {'id' => ENV['PROJECT_ID']}.to_json, headers: {})
 
       result = graph.put_connections(ENV['BUSINESS_ID'], 'businessprojects', name: 'test_project')

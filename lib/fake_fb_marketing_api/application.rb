@@ -57,10 +57,7 @@ module FakeFbMarketingApi
     end
 
     post '/v3.2/:business_id/businessprojects' do
-      content_type :json
-      {
-        id: ENV['PROJECT_ID']
-      }.to_json
+      proxy_post_to_fb(request, response)
     end
 
     post '/v3.2/:ad_account_id/campaigns' do
