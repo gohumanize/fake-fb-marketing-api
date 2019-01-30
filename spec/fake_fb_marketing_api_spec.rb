@@ -5,6 +5,7 @@ RSpec.describe FakeFbMarketingApi::Application do
   before { ENV['PROJECT_ID'] = Faker::Number.number(10) }
   before { ENV['BUSINESS_ID'] = Faker::Number.number(10) }
   before { ENV['FACEBOOK_AD_ACCOUNT_ID'] = Faker::Number.number(10) }
+  before { ENV['FACEBOOK_AD_ACCOUNT_NAME'] = Faker::Seinfeld.character }
   before { ENV['BRAND_AWARENESS_CAMPAIGN_ID'] = Faker::Number.number(10) }
   before { ENV['LINK_CLICKS_CAMPAIGN_ID'] = Faker::Number.number(10) }
   before { ENV['VIDEO_VIEWS_CAMPAIGN_ID'] = Faker::Number.number(10) }
@@ -31,27 +32,80 @@ RSpec.describe FakeFbMarketingApi::Application do
     expect(FakeFbMarketingApi::VERSION).not_to be nil
   end
 
-  describe 'POST /:business_id/adaccount' do
-    it 'works' do
-      end_advertiser_id = Faker::Number.number(10)
-      media_agency_id = Faker::Number.number(10)
-      response = graph.put_connections "#{ENV['BUSINESS_ID']}", 'adaccount',
-        name: 'Test Ad Account',
-        currency: 'USD', timezone_id: 6, end_advertiser_id: end_advertiser_id,
-        media_agency_id: media_agency_id, partner: 'NONE'
+  describe 'GET /:business_id/owned_ad_acocunts' do
+    it 'returns a single ad account' do
+      response = graph.get_object("#{ENV['BUSINESS_ID']}/owned_ad_accounts", fields: 'id,name')
 
-      expect(response).to include "business_id" => ENV['BUSINESS_ID'], "account_id" => ENV['FACEBOOK_AD_ACCOUNT_ID'], "id" => "act_%{ENV['FACEBOOK_AD_ACCOUNT_ID']}", "end_advertiser_id" => end_advertiser_id, "media_agency_id" => media_agency_id, "partner_id" => 'NONE'
+      expect(response).to eq(
+        [
+          {
+            'id' => ENV.fetch('FACEBOOK_AD_ACCOUNT_ID'),
+            'name' => ENV.fetch('FACEBOOK_AD_ACCOUNT_NAME')
+          }
+        ])
+    end
+  end
+
+  describe 'POST /:business_id/adaccounts' do
+    context 'when creating an ad account' do
+      it 'works' do
+        end_advertiser_id = Faker::Number.number(10)
+        media_agency_id = Faker::Number.number(10)
+        response = graph.put_connections "#{ENV['BUSINESS_ID']}", 'adaccounts',
+          name: 'Test Ad Account',
+          currency: 'USD', timezone_id: 6, end_advertiser_id: end_advertiser_id,
+          media_agency_id: media_agency_id, partner: 'NONE'
+
+        expect(response).to include 
+        {
+          "business_id" => ENV['BUSINESS_ID'], 
+          "account_id" => ENV['FACEBOOK_AD_ACCOUNT_ID'], 
+          "id" => "act_%{ENV['FACEBOOK_AD_ACCOUNT_ID']}", 
+          "end_advertiser_id" => end_advertiser_id, 
+          "media_agency_id" => media_agency_id, 
+          "partner_id" => 'NONE'
+        }
+      end
+    end
+
+    context 'when adding a user to an ad account' do
+      it 'calls out to facebook' do
+        project_id = Faker::Number.number(15).to_s
+        fb_ad_account = ENV['FACEBOOK_AD_ACCOUNT_ID']
+        stub_request(:post, "https://graph.facebook.com/v3.2/#{project_id}/adaccounts?access_token=#{access_token}&adaccount_id=#{fb_ad_account}")
+          .with(
+            headers: {
+              'Expect'=>'',
+              'User-Agent'=>'fb-graph-proxy',
+              'X-App-Env'=>'staging',
+              'X-App-Name'=>'fb-graph-proxy'
+            }).to_return(status: 200, body: { 'success' => true }.to_json, headers: {})
+
+        response = graph.put_connections(project_id, 'adaccounts', adaccount_id: fb_ad_account)
+
+        expect(response).to eq('success' => true)
+      end
     end
   end
 
   describe 'POST /:ad_account_id/assigned_users' do
-    # waiting to see what the real response looks like
-    xit 'works' do
-      user_id = Faker::Number.number(10)
+    it 'passes makes a post to fb' do
+      user_id = Faker::Number.number(14).to_s
+      ad_account_id = Faker::Number.number(15).to_s
+      stub_request(:post, "https://graph.facebook.com/v3.2/#{ad_account_id}/assigned_users?access_token=#{access_token}&tasks=ANALYZE,MANAGE,ADVERTISE&user=#{user_id}")
+        .with(
+          headers: {
+            'Content-Length'=>'0',
+            'Expect'=>'',
+            'User-Agent'=>'fb-graph-proxy',
+            'X-App-Env'=>'staging',
+            'X-App-Name'=>'fb-graph-proxy'
+          })
+        .to_return(status: 200, body: { 'success' => true }.to_json, headers: {})
 
-      response = graph.put_connections("act_#{ENV['FACEBOOK_AD_ACCOUNT_ID']}", 'assigned_users', user: user_id, tasks: ['ANALYZE','MANAGE','ADVERTISE'])
+      response = graph.put_connections(ad_account_id, 'assigned_users', user: user_id, tasks:  %w[ANALYZE MANAGE ADVERTISE])
 
-      expect(JSON.parse(response)).to include 'success' => true
+      expect(response).to eq 'success' =>  true
     end
   end
 
@@ -232,7 +286,7 @@ RSpec.describe FakeFbMarketingApi::Application do
       expect(result).to include "success" => true
     end
   end
-  
+
 
   describe 'GET /' do
     it 'gets graph objects' do

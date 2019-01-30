@@ -28,23 +28,32 @@ module FakeFbMarketingApi
       end
     end
 
-    post '/v3.2/:business_id/adaccount' do
+    get '/v3.2/:business_id/owned_ad_accounts' do
       content_type :json
-      {
-        end_advertiser_id: params[:end_advertiser_id],
-        media_agency_id: params[:media_agency_id],
-        business_id: params[:business_id],
-        account_id: ENV['FACEBOOK_AD_ACCOUNT_ID'],
-        id: "act_%{ENV['FACEBOOK_AD_ACCOUNT_ID']}",
-        partner_id: 'NONE'
-      }.to_json
+      [{
+        'id' => ENV['FACEBOOK_AD_ACCOUNT_ID'],
+        'name' => ENV['FACEBOOK_AD_ACCOUNT_NAME']
+      }].to_json
     end
 
-    post '/v3.0/:ad_account_id/assigned_users' do
+    post '/v3.2/:business_id/adaccounts' do
       content_type :json
-      {
-        success: true
-      }.to_json
+      if params.key?('adaccount_id')
+        proxy_post_to_fb(request, response)
+      else
+        {
+          end_advertiser_id: params[:end_advertiser_id],
+          media_agency_id: params[:media_agency_id],
+          business_id: params[:business_id],
+          account_id: ENV['FACEBOOK_AD_ACCOUNT_ID'],
+          id: "act_%{ENV['FACEBOOK_AD_ACCOUNT_ID']}",
+          partner_id: 'NONE'
+        }.to_json
+      end
+    end
+
+    post '/v3.2/:ad_account_id/assigned_users' do
+      proxy_post_to_fb(request, response)
     end
 
     post '/v3.2/:business_id/businessprojects' do
@@ -81,12 +90,20 @@ module FakeFbMarketingApi
         {
           id: ENV['PAGE_LIKES_CAMPAIGN_ID']
         }.to_json
+      when 'CONVERSIONS_COUNT'
+        {
+          id: ENV['CONVERSIONS_COUNT_CAMPAIGN_ID']
+        }.to_json
+      when 'CONVERSIONS_FUNDRAISE'
+        {
+          id: ENV['CONVERSIONS_FUNDRAISE_CAMPAIGN_ID']
+        }.to_json
       end
     end
 
     get '/v3.2/:graph_id/*' do
       content_type :json
-      proxy_to_fb(request, response)
+      proxy_get_to_fb(request, response)
     end
 
     post '/v3.2/*' do
@@ -95,10 +112,26 @@ module FakeFbMarketingApi
     end
 
     get '/v3.2/*' do
-      proxy_to_fb(request, response)
+      proxy_get_to_fb(request, response)
     end
 
-    def proxy_to_fb(request, response)
+    # Temporary stubs for v3.0
+    get '/v3.0/:graph_id/*' do
+      content_type :json
+      proxy_get_to_fb(request, response)
+    end
+
+    post '/v3.0/*' do
+      content_type :json
+      return proxy_post_to_fb(request, response)
+    end
+
+    get '/v3.0/*' do
+      proxy_get_to_fb(request, response)
+    end
+
+
+    def proxy_get_to_fb(request, response)
       resp = @conn.get("#{request.path}?#{request.query_string}") do |req|
         request.params.each do |key, value|
           req.params[key] = value
