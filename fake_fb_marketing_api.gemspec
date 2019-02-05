@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Provides a stubbed interface for select Facebook Marketing API endpoints'
   spec.description   = 'The key purpose of this gem is to allow developers the ability to stub the endpoints related the the Facebook Business API.  Commands such as creating ad accounts can not be reversed and count against quota.'
-  spec.homepage      = ""
+  spec.homepage      = "https://humanagency.org/"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
