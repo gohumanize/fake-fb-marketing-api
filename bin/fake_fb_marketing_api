@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'fake_fb_marketing_api/application'
+
+$stdout.sync = true
+
+run FakeFbMarketingApi::Application
