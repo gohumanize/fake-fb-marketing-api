@@ -1,12 +1,12 @@
+# frozen_string_literal: true
+
 require 'sinatra'
 require 'faraday'
 require 'we-call'
 
 module FakeFbMarketingApi
   class Application < Sinatra::Base
-
     configure do
-
       # setup WeCall
       We::Call.configure do |config|
         config.app_name = 'fb-graph-proxy'
@@ -129,24 +129,23 @@ module FakeFbMarketingApi
       proxy_get_to_fb(request, response)
     end
 
-
-    def proxy_get_to_fb(request, response)
+    def proxy_get_to_fb(request, _response)
       resp = @conn.get("#{request.path}?#{request.query_string}") do |req|
         request.params.each do |key, value|
           req.params[key] = value
         end
       end
-      headers = resp.headers.select { |header, value| value != 'keep-alive' && value != 'chunked'  }
+      headers = resp.headers.select { |_header, value| value != 'keep-alive' && value != 'chunked' }
       [resp.status, headers, resp.body]
     end
 
-    def proxy_post_to_fb(request, response)
+    def proxy_post_to_fb(request, _response)
       resp = @conn.post("#{request.path}?#{request.query_string}") do |req|
         request.params.each do |key, value|
           req.params[key] = value
         end
       end
-      headers = resp.headers.select { |header, value| value != 'keep-alive' && value != 'chunked'  }
+      headers = resp.headers.select { |_header, value| value != 'keep-alive' && value != 'chunked' }
       [resp.status, headers, resp.body]
     end
   end

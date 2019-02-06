@@ -1,4 +1,6 @@
-require "fake_fb_marketing_api/version"
+# frozen_string_literal: true
+
+require 'fake_fb_marketing_api/version'
 
 module FakeFbMarketingApi
   class Error < StandardError; end

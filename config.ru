@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # config.ru
 
 $LOAD_PATH << File.expand_path('lib', __dir__)

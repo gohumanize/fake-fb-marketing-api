@@ -1,8 +1,16 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'bundler/setup'
 require 'fake_fb_marketing_api/application'
 
 $stdout.sync = true
 
-run FakeFbMarketingApi::Application.run!
+arguments = Hash[ARGV.join(' ').scan(/--?([^=\s]+)(?:=(\S+))?/)]
+
+params =  {
+  port: arguments.fetch('port', 4000),
+  host: arguments.fetch('host', '127.0.0.1')
+}
+
+run FakeFbMarketingApi::Application.run!(params)
