@@ -36,7 +36,7 @@ Gem::Specification.new do |gem|
   gem.executables = ['fake_fb_marketing_api']
   gem.required_ruby_version = '>= 2.4.3'
 
-  gem.add_development_dependency 'bundler', '~> 2.0'
+  gem.add_development_dependency 'bundler', '~> 1.15'
   gem.add_development_dependency 'capybara_discoball'
   gem.add_development_dependency 'faker', '~> 1.9'
   gem.add_development_dependency 'faraday'
