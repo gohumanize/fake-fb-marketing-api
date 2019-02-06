@@ -1,11 +1,13 @@
 require 'sinatra'
 require 'faraday'
 require 'we-call'
+require 'fake_fb_marketing_api/fake_facebook'
 
 module FakeFbMarketingApi
   class Application < Sinatra::Base
 
     configure do
+      FakeFbMarketingApi::FakeFacebook.setup
 
       # setup WeCall
       We::Call.configure do |config|
@@ -30,14 +32,17 @@ module FakeFbMarketingApi
 
     get '/v3.2/:business_id/owned_ad_accounts' do
       content_type :json
-      [{
-        'id' => ENV['FACEBOOK_AD_ACCOUNT_ID'],
-        'name' => ENV['FACEBOOK_AD_ACCOUNT_NAME']
-      }].to_json
+      FakeFbMarketingApi::FakeFacebook.owned_ad_accounts.to_json
     end
 
     post '/v3.2/:business_id/adaccounts' do
       content_type :json
+      FakeFbMarketingApi::FakeFacebook.add_owned_ad_account(
+        {
+          'name' => params[:name],
+          'id' => ENV.fetch('FACEBOOK_AD_ACCOUNT_ID')
+        }
+      )
       if params.key?('adaccount_id')
         proxy_post_to_fb(request, response)
       else
