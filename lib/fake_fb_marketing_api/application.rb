@@ -28,6 +28,8 @@ module FakeFbMarketingApi
       end
     end
 
+    set :server, %w[webrick]
+
     get '/v3.2/:business_id/owned_ad_accounts' do
       content_type :json
       [{
