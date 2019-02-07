@@ -13,4 +13,4 @@ params =  {
   host: arguments.fetch('host', '127.0.0.1')
 }
 
-run FakeFbMarketingApi::Application.run!(params)
+FakeFbMarketingApi::Application.run!(params)
