@@ -49,5 +49,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec', '~> 3.0'
   gem.add_development_dependency 'webmock'
   gem.add_runtime_dependency 'sinatra', '~> 2.0'
-  gem.add_runtime_dependency 'we-call'
+  gem.add_runtime_dependency 'we-call', '~> 0.9'
 end

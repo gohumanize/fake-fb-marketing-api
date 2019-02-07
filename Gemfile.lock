@@ -3,7 +3,7 @@ PATH
   specs:
     fake_fb_marketing_api (0.1.0)
       sinatra (~> 2.0)
-      we-call
+      we-call (~> 0.9)
 
 GEM
   remote: https://rubygems.org/
