@@ -30,7 +30,7 @@ module FakeFbMarketingApi
 
     set :server, %w[webrick]
 
-    get '/v3.2/:business_id/owned_ad_accounts' do
+    get '/:business_id/owned_ad_accounts' do
       content_type :json
       [{
         'id' => ENV['FACEBOOK_AD_ACCOUNT_ID'],
@@ -38,7 +38,7 @@ module FakeFbMarketingApi
       }].to_json
     end
 
-    post '/v3.2/:business_id/adaccounts' do
+    post '/:business_id/adaccounts' do
       content_type :json
       if params.key?('adaccount_id')
         proxy_post_to_fb(request, response)
@@ -54,15 +54,15 @@ module FakeFbMarketingApi
       end
     end
 
-    post '/v3.2/:ad_account_id/assigned_users' do
+    post '/:ad_account_id/assigned_users' do
       proxy_post_to_fb(request, response)
     end
 
-    post '/v3.2/:business_id/businessprojects' do
+    post '/:business_id/businessprojects' do
       proxy_post_to_fb(request, response)
     end
 
-    post '/v3.2/:ad_account_id/campaigns' do
+    post '/:ad_account_id/campaigns' do
       content_type :json
       case params[:objective]
       when 'BRAND_AWARENESS'
@@ -100,32 +100,17 @@ module FakeFbMarketingApi
       end
     end
 
-    get '/v3.2/:graph_id/*' do
+    get '/:graph_id/*' do
       content_type :json
       proxy_get_to_fb(request, response)
     end
 
-    post '/v3.2/*' do
+    post '/*' do
       content_type :json
       return proxy_post_to_fb(request, response)
     end
 
-    get '/v3.2/*' do
-      proxy_get_to_fb(request, response)
-    end
-
-    # Temporary stubs for v3.0
-    get '/v3.0/:graph_id/*' do
-      content_type :json
-      proxy_get_to_fb(request, response)
-    end
-
-    post '/v3.0/*' do
-      content_type :json
-      return proxy_post_to_fb(request, response)
-    end
-
-    get '/v3.0/*' do
+    get '/*' do
       proxy_get_to_fb(request, response)
     end
 
