@@ -33,7 +33,6 @@ Gem::Specification.new do |gem|
   gem.files = Dir.chdir(File.expand_path(__dir__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|gem|features)/}) }
   end
-  gem.executables = ['fake_fb_marketing_api']
   gem.required_ruby_version = '>= 2.4.3'
 
   gem.add_development_dependency 'bundler', '~> 1.15'
