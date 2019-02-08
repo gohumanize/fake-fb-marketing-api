@@ -36,6 +36,8 @@ module FakeFbMarketingApi
       end
     end
 
+    private
+
     def proxy_get_to_fb(request, _response)
       resp = @conn.get("#{request.path}?#{request.query_string}") do |req|
         request.params.each do |key, value|

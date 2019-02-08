@@ -17,7 +17,6 @@ module FakeFbMarketingApi
     def initialize(_params = {})
       @app = begin
         Rack::Builder.new do
-          # run VERSIONS.first
           VERSIONS.each do |e|
             map "/#{e.namespace}" do
               run e

@@ -14,7 +14,7 @@ module FakeFbMarketingApi
 
       post '/*' do
         content_type :json
-        return proxy_post_to_fb(request, response)
+        proxy_post_to_fb(request, response)
       end
 
       get '/*' do
