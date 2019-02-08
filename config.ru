@@ -7,4 +7,4 @@ require 'fake_fb_marketing_api/application'
 
 $stdout.sync = true
 
-run FakeFbMarketingApi::Application
+run FakeFbMarketingApi::Application.new

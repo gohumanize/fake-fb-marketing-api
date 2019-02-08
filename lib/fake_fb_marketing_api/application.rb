@@ -1,137 +1,34 @@
 # frozen_string_literal: true
 
-require 'sinatra'
-require 'faraday'
-require 'we-call'
+require 'rack/builder'
+
+require_relative './versions/v3_2'
+require_relative './versions/v3_0'
 
 module FakeFbMarketingApi
-  class Application < Sinatra::Base
-    configure do
-      # setup WeCall
-      We::Call.configure do |config|
-        config.app_name = 'fb-graph-proxy'
-        config.app_env = 'staging'
-        config.detect_deprecations = false
-      end
-    end
+  class Application
+    VERSIONS = [
+      FakeFbMarketingApi::Versions::V32,
+      FakeFbMarketingApi::Versions::V30
+    ].freeze
 
-    before do
-      Faraday::Response::Logger::DEFAULT_OPTIONS[:headers] = false
-      Faraday::Response::Logger::DEFAULT_OPTIONS[:bodies]  = true
-      @conn = We::Call::Connection.new(host: 'https://graph.facebook.com', timeout: 2) do |faraday|
-        faraday.adapter :typhoeus
-        faraday.response :logger do |logger|
-          logger.filter(/(access_token=)(\w+)/, '\1[FILTERED]')
-          logger.filter(/("access_token":)(.[^"]+)/, '\1[FILTERED]')
-          logger.filter(/("token":)(.[^"]+)/, '\1[FILTERED]')
+    attr_reader :app
+
+    def initialize(_params = {})
+      @app = begin
+        Rack::Builder.new do
+          # run VERSIONS.first
+          VERSIONS.each do |e|
+            map "/#{e.namespace}" do
+              run e
+            end
+          end
         end
       end
     end
 
-    set :server, %w[webrick]
-
-    get '/:business_id/owned_ad_accounts' do
-      content_type :json
-      [{
-        'id' => ENV['FACEBOOK_AD_ACCOUNT_ID'],
-        'name' => ENV['FACEBOOK_AD_ACCOUNT_NAME']
-      }].to_json
-    end
-
-    post '/:business_id/adaccounts' do
-      content_type :json
-      if params.key?('adaccount_id')
-        proxy_post_to_fb(request, response)
-      else
-        {
-          end_advertiser_id: params[:end_advertiser_id],
-          media_agency_id: params[:media_agency_id],
-          business_id: params[:business_id],
-          account_id: ENV['FACEBOOK_AD_ACCOUNT_ID'],
-          id: "act_%{ENV['FACEBOOK_AD_ACCOUNT_ID']}",
-          partner_id: 'NONE'
-        }.to_json
-      end
-    end
-
-    post '/:ad_account_id/assigned_users' do
-      proxy_post_to_fb(request, response)
-    end
-
-    post '/:business_id/businessprojects' do
-      proxy_post_to_fb(request, response)
-    end
-
-    post '/:ad_account_id/campaigns' do
-      content_type :json
-      case params[:objective]
-      when 'BRAND_AWARENESS'
-        {
-          id: ENV['BRAND_AWARENESS_CAMPAIGN_ID']
-        }.to_json
-      when 'LINK_CLICKS'
-        {
-          id: ENV['LINK_CLICKS_CAMPAIGN_ID']
-        }.to_json
-      when 'VIDEO_VIEWS'
-        {
-          id: ENV['VIDEO_VIEWS_CAMPAIGN_ID']
-        }.to_json
-      when 'REACH'
-        {
-          id: ENV['REACH_CAMPAIGN_ID']
-        }.to_json
-      when 'POST_ENGAGEMENT'
-        {
-          id: ENV['POST_ENGAGEMENT_CAMPAIGN_ID']
-        }.to_json
-      when 'PAGE_LIKES'
-        {
-          id: ENV['PAGE_LIKES_CAMPAIGN_ID']
-        }.to_json
-      when 'CONVERSIONS_COUNT'
-        {
-          id: ENV['CONVERSIONS_COUNT_CAMPAIGN_ID']
-        }.to_json
-      when 'CONVERSIONS_FUNDRAISE'
-        {
-          id: ENV['CONVERSIONS_FUNDRAISE_CAMPAIGN_ID']
-        }.to_json
-      end
-    end
-
-    get '/:graph_id/*' do
-      content_type :json
-      proxy_get_to_fb(request, response)
-    end
-
-    post '/*' do
-      content_type :json
-      return proxy_post_to_fb(request, response)
-    end
-
-    get '/*' do
-      proxy_get_to_fb(request, response)
-    end
-
-    def proxy_get_to_fb(request, _response)
-      resp = @conn.get("#{request.path}?#{request.query_string}") do |req|
-        request.params.each do |key, value|
-          req.params[key] = value
-        end
-      end
-      headers = resp.headers.select { |_header, value| value != 'keep-alive' && value != 'chunked' }
-      [resp.status, headers, resp.body]
-    end
-
-    def proxy_post_to_fb(request, _response)
-      resp = @conn.post("#{request.path}?#{request.query_string}") do |req|
-        request.params.each do |key, value|
-          req.params[key] = value
-        end
-      end
-      headers = resp.headers.select { |_header, value| value != 'keep-alive' && value != 'chunked' }
-      [resp.status, headers, resp.body]
+    def call(env)
+      @app.call(env)
     end
   end
 end

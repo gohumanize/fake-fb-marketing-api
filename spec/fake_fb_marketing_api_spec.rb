@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'koala'
 require 'capybara_discoball'
 
@@ -42,7 +44,8 @@ RSpec.describe FakeFbMarketingApi::Application do
             'id' => ENV.fetch('FACEBOOK_AD_ACCOUNT_ID'),
             'name' => ENV.fetch('FACEBOOK_AD_ACCOUNT_NAME')
           }
-        ])
+        ]
+      )
     end
   end
 
@@ -51,19 +54,19 @@ RSpec.describe FakeFbMarketingApi::Application do
       it 'works' do
         end_advertiser_id = Faker::Number.number(10)
         media_agency_id = Faker::Number.number(10)
-        response = graph.put_connections "#{ENV['BUSINESS_ID']}", 'adaccounts',
-          name: 'Test Ad Account',
-          currency: 'USD', timezone_id: 6, end_advertiser_id: end_advertiser_id,
-          media_agency_id: media_agency_id, partner: 'NONE'
+        response = graph.put_connections (ENV['BUSINESS_ID']).to_s, 'adaccounts',
+                                         name: 'Test Ad Account',
+                                         currency: 'USD', timezone_id: 6, end_advertiser_id: end_advertiser_id,
+                                         media_agency_id: media_agency_id, partner: 'NONE'
 
-        expect(response).to include 
+        expect(response).to include
         {
-          "business_id" => ENV['BUSINESS_ID'], 
-          "account_id" => ENV['FACEBOOK_AD_ACCOUNT_ID'], 
-          "id" => "act_%{ENV['FACEBOOK_AD_ACCOUNT_ID']}", 
-          "end_advertiser_id" => end_advertiser_id, 
-          "media_agency_id" => media_agency_id, 
-          "partner_id" => 'NONE'
+          'business_id' => ENV['BUSINESS_ID'],
+          'account_id' => ENV['FACEBOOK_AD_ACCOUNT_ID'],
+          'id' => "act_%{ENV['FACEBOOK_AD_ACCOUNT_ID']}",
+          'end_advertiser_id' => end_advertiser_id,
+          'media_agency_id' => media_agency_id,
+          'partner_id' => 'NONE'
         }
       end
     end
@@ -75,11 +78,12 @@ RSpec.describe FakeFbMarketingApi::Application do
         stub_request(:post, "https://graph.facebook.com/v3.2/#{project_id}/adaccounts?access_token=#{access_token}&adaccount_id=#{fb_ad_account}")
           .with(
             headers: {
-              'Expect'=>'',
-              'User-Agent'=>'fb-graph-proxy',
-              'X-App-Env'=>'staging',
-              'X-App-Name'=>'fb-graph-proxy'
-            }).to_return(status: 200, body: { 'success' => true }.to_json, headers: {})
+              'Expect' => '',
+              'User-Agent' => 'fb-graph-proxy',
+              'X-App-Env' => 'staging',
+              'X-App-Name' => 'fb-graph-proxy'
+            }
+          ).to_return(status: 200, body: { 'success' => true }.to_json, headers: {})
 
         response = graph.put_connections(project_id, 'adaccounts', adaccount_id: fb_ad_account)
 
@@ -95,24 +99,25 @@ RSpec.describe FakeFbMarketingApi::Application do
       stub_request(:post, "https://graph.facebook.com/v3.2/#{ad_account_id}/assigned_users?access_token=#{access_token}&tasks=ANALYZE,MANAGE,ADVERTISE&user=#{user_id}")
         .with(
           headers: {
-            'Content-Length'=>'0',
-            'Expect'=>'',
-            'User-Agent'=>'fb-graph-proxy',
-            'X-App-Env'=>'staging',
-            'X-App-Name'=>'fb-graph-proxy'
-          })
+            'Content-Length' => '0',
+            'Expect' => '',
+            'User-Agent' => 'fb-graph-proxy',
+            'X-App-Env' => 'staging',
+            'X-App-Name' => 'fb-graph-proxy'
+          }
+        )
         .to_return(status: 200, body: { 'success' => true }.to_json, headers: {})
 
-      response = graph.put_connections(ad_account_id, 'assigned_users', user: user_id, tasks:  %w[ANALYZE MANAGE ADVERTISE])
+      response = graph.put_connections(ad_account_id, 'assigned_users', user: user_id, tasks: %w[ANALYZE MANAGE ADVERTISE])
 
-      expect(response).to eq 'success' =>  true
+      expect(response).to eq 'success' => true
     end
   end
 
   describe 'POST /:business_id/businessprojects' do
     it 'passes a static project_id' do
       stub_request(:post, "https://graph.facebook.com/v3.2/#{ENV['BUSINESS_ID']}/businessprojects?access_token=#{access_token}&name=test_project")
-        .to_return(status: 200, body: {'id' => ENV['PROJECT_ID']}.to_json, headers: {})
+        .to_return(status: 200, body: { 'id' => ENV['PROJECT_ID'] }.to_json, headers: {})
 
       result = graph.put_connections(ENV['BUSINESS_ID'], 'businessprojects', name: 'test_project')
 
@@ -180,35 +185,35 @@ RSpec.describe FakeFbMarketingApi::Application do
   describe 'GET /:graph_id/insights' do
     it 'passes through insight requests' do
       graph_id = Faker::Number.number(10)
-      stub_request(:get, "https://graph.facebook.com/v3.2/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id").
-        to_return(status: 200, body: "{\"data\":[{\"ad_id\":\"#{graph_id}\",\"date_start\":\"2018-05-30\",\"date_stop\":\"2019-01-05\"}],\"paging\":{\"cursors\":{\"before\":\"MAZDZD\",\"after\":\"MAZDZD\"}}}", headers: {})
+      stub_request(:get, "https://graph.facebook.com/v3.2/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id")
+        .to_return(status: 200, body: "{\"data\":[{\"ad_id\":\"#{graph_id}\",\"date_start\":\"2018-05-30\",\"date_stop\":\"2019-01-05\"}],\"paging\":{\"cursors\":{\"before\":\"MAZDZD\",\"after\":\"MAZDZD\"}}}", headers: {})
 
-        ad_insights = graph.get_object("#{graph_id}/insights", { fields: 'ad_id', date_preset: 'lifetime'})
+      ad_insights = graph.get_object("#{graph_id}/insights", fields: 'ad_id', date_preset: 'lifetime')
 
-        expect(ad_insights.count).to eq 1
-        expect(ad_insights.first["ad_id"]).to eq graph_id
+      expect(ad_insights.count).to eq 1
+      expect(ad_insights.first['ad_id']).to eq graph_id
     end
 
     it 'returns headers of the api call' do
       graph_id = Faker::Number.number(10)
       headers = { 'etag' => '423144fb7fd642308ea9666e20cceb65ee4f6650' }
-      stub_request(:get, "https://graph.facebook.com/v3.2/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id").
-        to_return(status: 200, body: "{\"data\":[{\"ad_id\":\"#{graph_id}\",\"date_start\":\"2018-05-30\",\"date_stop\":\"2019-01-05\"}],\"paging\":{\"cursors\":{\"before\":\"MAZDZD\",\"after\":\"MAZDZD\"}}}", headers: headers)
+      stub_request(:get, "https://graph.facebook.com/v3.2/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id")
+        .to_return(status: 200, body: "{\"data\":[{\"ad_id\":\"#{graph_id}\",\"date_start\":\"2018-05-30\",\"date_stop\":\"2019-01-05\"}],\"paging\":{\"cursors\":{\"before\":\"MAZDZD\",\"after\":\"MAZDZD\"}}}", headers: headers)
 
-        ad_insights = graph.get_object("#{graph_id}/insights", { fields: 'ad_id', date_preset: 'lifetime'})
+      ad_insights = graph.get_object("#{graph_id}/insights", fields: 'ad_id', date_preset: 'lifetime')
 
-        expect(ad_insights.headers).to include 'etag'
+      expect(ad_insights.headers).to include 'etag'
     end
 
     it 'returns the status of the api call' do
       graph_id = Faker::Number.number(10)
       headers = { 'etag' => '423144fb7fd642308ea9666e20cceb65ee4f6650' }
-      stub_request(:get, "https://graph.facebook.com/v3.2/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id").
-        to_return(status: 400, body: "{\"error\":{\"message\":\"(#100) date_preset must be \",\"type\":\"OAuthException\",\"code\":100,\"fbtrace_id\":\"GB8SawFk\/47\"}}", headers: headers)
+      stub_request(:get, "https://graph.facebook.com/v3.2/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id")
+        .to_return(status: 400, body: "{\"error\":{\"message\":\"(#100) date_preset must be \",\"type\":\"OAuthException\",\"code\":100,\"fbtrace_id\":\"GB8SawFk\/47\"}}", headers: headers)
 
-        expect {
-          graph.get_object("#{graph_id}/insights", { fields: 'ad_id', date_preset: 'lifetime'})
-        }.to raise_error Koala::KoalaError
+      expect do
+        graph.get_object("#{graph_id}/insights", fields: 'ad_id', date_preset: 'lifetime')
+      end.to raise_error Koala::KoalaError
     end
   end
 
@@ -217,15 +222,15 @@ RSpec.describe FakeFbMarketingApi::Application do
       graph_id = Faker::Number.number(10)
       json = File.open("#{Dir.pwd}/spec/fb_batch_response.json").read
       json.gsub!('replace_ad_id', graph_id)
-      stub_request(:post, "https://graph.facebook.com/v3.2/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22#{graph_id}/insights?date_preset=lifetime%26fields=ad_id%22%7D,%7B%22method%22:%22get%22,%22relative_url%22:%22#{graph_id}/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D").
-        to_return(status: 200, body: json, headers: {})
+      stub_request(:post, "https://graph.facebook.com/v3.2/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22#{graph_id}/insights?date_preset=lifetime%26fields=ad_id%22%7D,%7B%22method%22:%22get%22,%22relative_url%22:%22#{graph_id}/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D")
+        .to_return(status: 200, body: json, headers: {})
 
-        result = graph.batch do |batch|
-          batch.get_object("#{graph_id}/insights", fields: 'ad_id', date_preset: 'lifetime')
-          batch.get_object("#{graph_id}/insights", fields: 'ad_id', date_preset: 'lifetime')
-        end
+      result = graph.batch do |batch|
+        batch.get_object("#{graph_id}/insights", fields: 'ad_id', date_preset: 'lifetime')
+        batch.get_object("#{graph_id}/insights", fields: 'ad_id', date_preset: 'lifetime')
+      end
 
-        expect(result.first.first).to include 'ad_id' => graph_id
+      expect(result.first.first).to include 'ad_id' => graph_id
     end
 
     it 'returns errror when they happen' do
@@ -233,42 +238,42 @@ RSpec.describe FakeFbMarketingApi::Application do
       json = File.open("#{Dir.pwd}/spec/fb_batch_error_response.json").read
       json.gsub!('replace_ad_id', graph_id)
       stub_request(:post, "https://graph.facebook.com/v3.2/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D,%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D").
-        #stub_request(:get, "https://graph.facebook.com/v3.0/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22#{graph_id}/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D").
+        # stub_request(:get, "https://graph.facebook.com/v3.0/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22#{graph_id}/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D").
         to_return(status: 200, body: json)
 
-        result = graph.batch do |batch|
-          batch.get_object("doesnotexist/insights", fields: 'ad_id', date_preset: 'lifetime')
-          batch.get_object("doesnotexist/insights", fields: 'ad_id', date_preset: 'lifetime')
-        end
+      result = graph.batch do |batch|
+        batch.get_object('doesnotexist/insights', fields: 'ad_id', date_preset: 'lifetime')
+        batch.get_object('doesnotexist/insights', fields: 'ad_id', date_preset: 'lifetime')
+      end
 
-        expect(result[0].fb_error_code).to eq 803
-        expect(result[1].fb_error_code).to eq 803
+      expect(result[0].fb_error_code).to eq 803
+      expect(result[1].fb_error_code).to eq 803
     end
 
     it 'passes headers through' do
       graph_id = Faker::Number.number(10)
       json = File.open("#{Dir.pwd}/spec/fb_batch_error_response.json").read
       json.gsub!('replace_ad_id', graph_id)
-      stub_request(:post, "https://graph.facebook.com/v3.2/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D,%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D").
-        to_return(status: 200, 
-                  body: json, 
-                  headers: { 'Content-Type'=> 'text/javascript; charset=UTF-8',
-                             'Facebook-API-Version' => 'v3.2',
-                             'X-App-Usage' => '{"call_count":0,"total_cputime":0,"total_time":0}',
-                             'ETag' => '9d4067db4e21a79fc53d45e0f487e67c5c0b50a1',
-                             'Access-Control-Allow-Origin' => '*',
-                             'Cache-Control' => 'private, no-cache, no-store, must-revalidate',
-                             'Vary' => 'Accept-Encoding',
-                             'Expires' => 'Sat, 01 Jan 2000 00:00:00 GMT',
-                             'X-Ad-Account-Usage' => '{"acc_id_util_pct":0}',
-                             'Strict-Transport-Security' => 'max-age=15552000; preload',
-                             'Transfer-Encoding' => 'chunked',
-                             'Connection' => 'keep-alive',
-                             'Pragma' => 'no-cache'})
+      stub_request(:post, "https://graph.facebook.com/v3.2/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D,%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D")
+        .to_return(status: 200,
+                   body: json,
+                   headers: { 'Content-Type' => 'text/javascript; charset=UTF-8',
+                              'Facebook-API-Version' => 'v3.2',
+                              'X-App-Usage' => '{"call_count":0,"total_cputime":0,"total_time":0}',
+                              'ETag' => '9d4067db4e21a79fc53d45e0f487e67c5c0b50a1',
+                              'Access-Control-Allow-Origin' => '*',
+                              'Cache-Control' => 'private, no-cache, no-store, must-revalidate',
+                              'Vary' => 'Accept-Encoding',
+                              'Expires' => 'Sat, 01 Jan 2000 00:00:00 GMT',
+                              'X-Ad-Account-Usage' => '{"acc_id_util_pct":0}',
+                              'Strict-Transport-Security' => 'max-age=15552000; preload',
+                              'Transfer-Encoding' => 'chunked',
+                              'Connection' => 'keep-alive',
+                              'Pragma' => 'no-cache' })
 
       result = graph.batch do |batch|
-        batch.get_object("doesnotexist/insights", fields: 'ad_id', date_preset: 'lifetime')
-        batch.get_object("doesnotexist/insights", fields: 'ad_id', date_preset: 'lifetime')
+        batch.get_object('doesnotexist/insights', fields: 'ad_id', date_preset: 'lifetime')
+        batch.get_object('doesnotexist/insights', fields: 'ad_id', date_preset: 'lifetime')
       end
 
       expect(result).not_to be_nil
@@ -283,10 +288,9 @@ RSpec.describe FakeFbMarketingApi::Application do
 
       result = graph.put_connections(graph_id, '', status: 'PAUSED')
 
-      expect(result).to include "success" => true
+      expect(result).to include 'success' => true
     end
   end
-
 
   describe 'GET /' do
     it 'gets graph objects' do
@@ -296,22 +300,23 @@ RSpec.describe FakeFbMarketingApi::Application do
         .to_return(
           status: 200,
           body: json,
-          headers:  {"Vary"=>"Accept-Encoding",
-                     "ETag"=>"\"90f0a9d85d04bf2760528d1f834dfa8444145dfb\"",
-                     "x-app-usage"=>"{\"call_count\":0,\"total_cputime\":0,\"total_time\":0}",
-                     "Content-Type"=>"application/json; charset=UTF-8",
-                     "facebook-api-version"=>"v3.0",
-                     "x-fb-rev"=>"4669664",
-                     "Access-Control-Allow-Origin"=>"*",
-                     "Cache-Control"=>"private, no-cache, no-store, must-revalidate",
-                     "x-fb-trace-id"=>"HwmUZwadEmw",
-                     "Expires"=>"Sat, 01 Jan 2000 00:00:00 GMT",
-                     "Strict-Transport-Security"=>"max-age=15552000; preload",
-                     "Pragma"=>"no-cache",
-                     "X-FB-Debug"=>"ykeEji7+g4+BKuq0fR8pJC2k3egR1GLILfEN7eL2VcGOBqKa7u2nLHGrLOE5DfB6A7YlPTalEVgbAx8oDyIDnQ==",
-                     "Date"=>"Tue, 08 Jan 2019 20:17:41 GMT",
-                     "Transfer-Encoding"=>"chunked",
-                     "Connection"=>"keep-alive"})
+          headers:  { 'Vary' => 'Accept-Encoding',
+                      'ETag' => '"90f0a9d85d04bf2760528d1f834dfa8444145dfb"',
+                      'x-app-usage' => '{"call_count":0,"total_cputime":0,"total_time":0}',
+                      'Content-Type' => 'application/json; charset=UTF-8',
+                      'facebook-api-version' => 'v3.0',
+                      'x-fb-rev' => '4669664',
+                      'Access-Control-Allow-Origin' => '*',
+                      'Cache-Control' => 'private, no-cache, no-store, must-revalidate',
+                      'x-fb-trace-id' => 'HwmUZwadEmw',
+                      'Expires' => 'Sat, 01 Jan 2000 00:00:00 GMT',
+                      'Strict-Transport-Security' => 'max-age=15552000; preload',
+                      'Pragma' => 'no-cache',
+                      'X-FB-Debug' => 'ykeEji7+g4+BKuq0fR8pJC2k3egR1GLILfEN7eL2VcGOBqKa7u2nLHGrLOE5DfB6A7YlPTalEVgbAx8oDyIDnQ==',
+                      'Date' => 'Tue, 08 Jan 2019 20:17:41 GMT',
+                      'Transfer-Encoding' => 'chunked',
+                      'Connection' => 'keep-alive' }
+        )
 
       result = graph.get_object('', fields: 'og_object{title,description,image}', id: 'https://fox2now.com/2018/04/02/5-myths-about-organ-donation/')
 
