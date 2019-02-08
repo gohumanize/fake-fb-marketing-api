@@ -10,3 +10,8 @@ lib/fake_fb_marketing_api/log/
 
 # rspec failure tracking
 .rspec_status
+
+# remove all vim files
+**/*.swo
+**/*.swn
+**/*.swp
