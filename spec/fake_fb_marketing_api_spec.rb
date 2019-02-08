@@ -35,14 +35,27 @@ RSpec.describe FakeFbMarketingApi::Application do
   end
 
   describe 'GET /:business_id/owned_ad_acocunts' do
-    it 'returns a single ad account' do
+    it 'does not show any ad accounts until one is created' do
+      response = graph.get_object("#{ENV['BUSINESS_ID']}/owned_ad_accounts", fields: 'id,name')
+
+      expect(response).to eq([])
+    end
+
+    it 'returns a single ad account after one has been created' do
+      end_advertiser_id = Faker::Number.number(10)
+      media_agency_id = Faker::Number.number(10)
+      name = Faker::Seinfeld.character
+      response = graph.put_connections "#{ENV['BUSINESS_ID']}", 'adaccounts',
+        name: name,
+        currency: 'USD', timezone_id: 6, end_advertiser_id: end_advertiser_id,
+        media_agency_id: media_agency_id, partner: 'NONE'
       response = graph.get_object("#{ENV['BUSINESS_ID']}/owned_ad_accounts", fields: 'id,name')
 
       expect(response).to eq(
         [
           {
             'id' => ENV.fetch('FACEBOOK_AD_ACCOUNT_ID'),
-            'name' => ENV.fetch('FACEBOOK_AD_ACCOUNT_NAME')
+            'name' => name
           }
         ]
       )
