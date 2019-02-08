@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../base'
+require_relative '../fake_facebook'
 
 module FakeFbMarketingApi
   module Versions
@@ -9,14 +10,17 @@ module FakeFbMarketingApi
 
       get '/:business_id/owned_ad_accounts' do
         content_type :json
-        [{
-          'id' => ENV['FACEBOOK_AD_ACCOUNT_ID'],
-          'name' => ENV['FACEBOOK_AD_ACCOUNT_NAME']
-        }].to_json
+        FakeFacebook.owned_ad_accounts.to_json
       end
 
       post '/:business_id/adaccounts' do
         content_type :json
+        FakeFacebook.add_owned_ad_account(
+          {
+            'name' => params[:name],
+            'id' => ENV.fetch('FACEBOOK_AD_ACCOUNT_ID')
+          }
+        )
         if params.key?('adaccount_id')
           proxy_post_to_fb(request, response)
         else

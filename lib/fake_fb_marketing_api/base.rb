@@ -4,6 +4,8 @@ require 'sinatra'
 require 'faraday'
 require 'we-call'
 
+require_relative './fake_facebook'
+
 module FakeFbMarketingApi
   class Base < Sinatra::Base
     class << self
@@ -15,6 +17,8 @@ module FakeFbMarketingApi
     end
 
     configure do
+      FakeFacebook.setup
+
       # setup WeCall
       We::Call.configure do |config|
         config.app_name = 'fb-graph-proxy'
