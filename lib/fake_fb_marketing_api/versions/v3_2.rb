@@ -25,8 +25,8 @@ module FakeFbMarketingApi
           end_advertiser_id: params[:end_advertiser_id],
           media_agency_id: params[:media_agency_id],
           business_id: params[:business_id],
-          account_id: ENV['FACEBOOK_AD_ACCOUNT_ID'],
-          id: "act_#{ENV['FACEBOOK_AD_ACCOUNT_ID']}",
+          account_id: ENV['FACEBOOK_AD_ACCOUNT_ID'].sub(/^act_/, ''),
+          id: ENV['FACEBOOK_AD_ACCOUNT_ID'],
           partner_id: 'NONE'
         }.to_json
       end

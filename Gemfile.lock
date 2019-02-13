@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fake_fb_marketing_api (0.0.2)
+    fake_fb_marketing_api (0.0.3)
       sinatra (~> 2.0)
       we-call (~> 0.9)
 
