@@ -13,7 +13,7 @@ module FakeFbMarketingApi
         FakeFacebook.owned_ad_accounts.to_json
       end
 
-      post '/:business_id/adaccounts' do
+      post '/:business_id/adaccount' do
         content_type :json
         FakeFacebook.add_owned_ad_account(
           {
@@ -21,18 +21,19 @@ module FakeFbMarketingApi
             'id' => ENV.fetch('FACEBOOK_AD_ACCOUNT_ID')
           }
         )
-        if params.key?('adaccount_id')
-          proxy_post_to_fb(request, response)
-        else
-          {
-            end_advertiser_id: params[:end_advertiser_id],
-            media_agency_id: params[:media_agency_id],
-            business_id: params[:business_id],
-            account_id: ENV['FACEBOOK_AD_ACCOUNT_ID'],
-            id: "act_%{ENV['FACEBOOK_AD_ACCOUNT_ID']}",
-            partner_id: 'NONE'
-          }.to_json
-        end
+        {
+          end_advertiser_id: params[:end_advertiser_id],
+          media_agency_id: params[:media_agency_id],
+          business_id: params[:business_id],
+          account_id: ENV['FACEBOOK_AD_ACCOUNT_ID'],
+          id: "act_#{ENV['FACEBOOK_AD_ACCOUNT_ID']}",
+          partner_id: 'NONE'
+        }.to_json
+      end
+
+      post '/:project_id/adaccounts' do
+        content_type :json
+        proxy_post_to_fb(request, response)
       end
 
       post '/:ad_account_id/assigned_users' do

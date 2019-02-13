@@ -45,7 +45,7 @@ RSpec.describe FakeFbMarketingApi::Application do
       end_advertiser_id = Faker::Number.number(10)
       media_agency_id = Faker::Number.number(10)
       name = Faker::Seinfeld.character
-      response = graph.put_connections "#{ENV['BUSINESS_ID']}", 'adaccounts',
+      response = graph.put_connections "#{ENV['BUSINESS_ID']}", 'adaccount',
         name: name,
         currency: 'USD', timezone_id: 6, end_advertiser_id: end_advertiser_id,
         media_agency_id: media_agency_id, partner: 'NONE'
@@ -62,12 +62,12 @@ RSpec.describe FakeFbMarketingApi::Application do
     end
   end
 
-  describe 'POST /:business_id/adaccounts' do
+  describe 'POST /:business_id/adaccount' do
     context 'when creating an ad account' do
       it 'works' do
         end_advertiser_id = Faker::Number.number(10)
         media_agency_id = Faker::Number.number(10)
-        response = graph.put_connections (ENV['BUSINESS_ID']).to_s, 'adaccounts',
+        response = graph.put_connections (ENV['BUSINESS_ID']).to_s, 'adaccount',
                                          name: 'Test Ad Account',
                                          currency: 'USD', timezone_id: 6, end_advertiser_id: end_advertiser_id,
                                          media_agency_id: media_agency_id, partner: 'NONE'
@@ -76,14 +76,16 @@ RSpec.describe FakeFbMarketingApi::Application do
         {
           'business_id' => ENV['BUSINESS_ID'],
           'account_id' => ENV['FACEBOOK_AD_ACCOUNT_ID'],
-          'id' => "act_%{ENV['FACEBOOK_AD_ACCOUNT_ID']}",
+          'id' => "act_#{ENV['FACEBOOK_AD_ACCOUNT_ID']}",
           'end_advertiser_id' => end_advertiser_id,
           'media_agency_id' => media_agency_id,
           'partner_id' => 'NONE'
         }
       end
     end
+  end
 
+  describe 'POST /:project_id/adaccounts' do
     context 'when adding a user to an ad account' do
       it 'calls out to facebook' do
         project_id = Faker::Number.number(15).to_s
