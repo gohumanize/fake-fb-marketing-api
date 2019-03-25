@@ -30,7 +30,7 @@ module FakeFbMarketingApi
     before do
       Faraday::Response::Logger::DEFAULT_OPTIONS[:headers] = false
       Faraday::Response::Logger::DEFAULT_OPTIONS[:bodies]  = true
-      @conn = We::Call::Connection.new(host: 'https://graph.facebook.com', timeout: 2) do |faraday|
+      @conn = We::Call::Connection.new(host: 'https://graph.facebook.com', timeout: 30) do |faraday|
         faraday.adapter :typhoeus
         faraday.response :logger do |logger|
           logger.filter(/(access_token=)(\w+)/, '\1[FILTERED]')
