@@ -11,6 +11,7 @@ RSpec.describe FakeFbMarketingApi::Application do
   before { ENV['BRAND_AWARENESS_CAMPAIGN_ID'] = Faker::Number.number(10) }
   before { ENV['LINK_CLICKS_CAMPAIGN_ID'] = Faker::Number.number(10) }
   before { ENV['VIDEO_VIEWS_CAMPAIGN_ID'] = Faker::Number.number(10) }
+  before { ENV['CONVERSIONS_CAMPAIGN_ID'] = Faker::Number.number(10) }
   before { ENV['REACH_CAMPAIGN_ID'] = Faker::Number.number(10) }
   before { ENV['POST_ENGAGEMENT_CAMPAIGN_ID'] = Faker::Number.number(10) }
   before { ENV['PAGE_LIKES_CAMPAIGN_ID'] = Faker::Number.number(10) }
@@ -187,6 +188,14 @@ RSpec.describe FakeFbMarketingApi::Application do
       campaign = graph.put_connections("act_#{ENV['FACEBOOK_AD_ACCOUNT_ID']}", 'campaigns', budget_rebalance_flag: false, name: "#{objective} Test Campaign", objective: objective, status: 'ACTIVE')
 
       expect(campaign).to eq 'id' => ENV['PAGE_LIKES_CAMPAIGN_ID']
+    end
+
+    it 'works for conversions' do
+      objective = 'CONVERSIONS'
+
+      campaign = graph.put_connections("act_#{ENV['FACEBOOK_AD_ACCOUNT_ID']}", 'campaigns', budget_rebalance_flag: false, name: "#{objective} Test Campaign", objective: objective, status: 'ACTIVE')
+
+      expect(campaign).to eq 'id' => ENV['CONVERSIONS_CAMPAIGN_ID']
     end
   end
 

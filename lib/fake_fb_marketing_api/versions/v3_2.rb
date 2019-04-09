@@ -79,6 +79,10 @@ module FakeFbMarketingApi
           {
             id: ENV['CONVERSIONS_FUNDRAISE_CAMPAIGN_ID']
           }.to_json
+        when 'CONVERSIONS'
+          {
+            id: ENV['CONVERSIONS_CAMPAIGN_ID']
+          }.to_json
         end
       end
 
