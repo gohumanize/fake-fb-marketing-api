@@ -16,13 +16,14 @@ RSpec.describe FakeFbMarketingApi::Application do
   before { ENV['POST_ENGAGEMENT_CAMPAIGN_ID'] = Faker::Number.number(10) }
   before { ENV['PAGE_LIKES_CAMPAIGN_ID'] = Faker::Number.number(10) }
   before do
+    FakeFbMarketingApi::FakeFacebook.setup
     WebMock.disable_net_connect!(allow: /127.0.0.1/)
     Capybara::Discoball.spin(FakeFbMarketingApi::Application) do |server|
       Koala.http_service.http_options = {
         use_ssl: false
       }
       Koala.configure do |config|
-        config.api_version = 'v3.2'
+        config.api_version = 'v3.3'
         config.graph_server = server.url.gsub 'http://', ''
       end
     end
@@ -91,7 +92,7 @@ RSpec.describe FakeFbMarketingApi::Application do
       it 'calls out to facebook' do
         project_id = Faker::Number.number(15).to_s
         fb_ad_account = ENV['FACEBOOK_AD_ACCOUNT_ID']
-        stub_request(:post, "https://graph.facebook.com/v3.2/#{project_id}/adaccounts?access_token=#{access_token}&adaccount_id=#{fb_ad_account}")
+        stub_request(:post, "https://graph.facebook.com/v3.3/#{project_id}/adaccounts?access_token=#{access_token}&adaccount_id=#{fb_ad_account}")
           .with(
             headers: {
               'Expect' => '',
@@ -112,7 +113,7 @@ RSpec.describe FakeFbMarketingApi::Application do
     it 'passes makes a post to fb' do
       user_id = Faker::Number.number(14).to_s
       ad_account_id = Faker::Number.number(15).to_s
-      stub_request(:post, "https://graph.facebook.com/v3.2/#{ad_account_id}/assigned_users?access_token=#{access_token}&tasks=ANALYZE,MANAGE,ADVERTISE&user=#{user_id}")
+      stub_request(:post, "https://graph.facebook.com/v3.3/#{ad_account_id}/assigned_users?access_token=#{access_token}&tasks=ANALYZE,MANAGE,ADVERTISE&user=#{user_id}")
         .with(
           headers: {
             'Content-Length' => '0',
@@ -132,7 +133,7 @@ RSpec.describe FakeFbMarketingApi::Application do
 
   describe 'POST /:business_id/businessprojects' do
     it 'passes a static project_id' do
-      stub_request(:post, "https://graph.facebook.com/v3.2/#{ENV['BUSINESS_ID']}/businessprojects?access_token=#{access_token}&name=test_project")
+      stub_request(:post, "https://graph.facebook.com/v3.3/#{ENV['BUSINESS_ID']}/businessprojects?access_token=#{access_token}&name=test_project")
         .to_return(status: 200, body: { 'id' => ENV['PROJECT_ID'] }.to_json, headers: {})
 
       result = graph.put_connections(ENV['BUSINESS_ID'], 'businessprojects', name: 'test_project')
@@ -209,7 +210,7 @@ RSpec.describe FakeFbMarketingApi::Application do
   describe 'GET /:graph_id/insights' do
     it 'passes through insight requests' do
       graph_id = Faker::Number.number(10)
-      stub_request(:get, "https://graph.facebook.com/v3.2/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id")
+      stub_request(:get, "https://graph.facebook.com/v3.3/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id")
         .to_return(status: 200, body: "{\"data\":[{\"ad_id\":\"#{graph_id}\",\"date_start\":\"2018-05-30\",\"date_stop\":\"2019-01-05\"}],\"paging\":{\"cursors\":{\"before\":\"MAZDZD\",\"after\":\"MAZDZD\"}}}", headers: {})
 
       ad_insights = graph.get_object("#{graph_id}/insights", fields: 'ad_id', date_preset: 'lifetime')
@@ -221,7 +222,7 @@ RSpec.describe FakeFbMarketingApi::Application do
     it 'returns headers of the api call' do
       graph_id = Faker::Number.number(10)
       headers = { 'etag' => '423144fb7fd642308ea9666e20cceb65ee4f6650' }
-      stub_request(:get, "https://graph.facebook.com/v3.2/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id")
+      stub_request(:get, "https://graph.facebook.com/v3.3/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id")
         .to_return(status: 200, body: "{\"data\":[{\"ad_id\":\"#{graph_id}\",\"date_start\":\"2018-05-30\",\"date_stop\":\"2019-01-05\"}],\"paging\":{\"cursors\":{\"before\":\"MAZDZD\",\"after\":\"MAZDZD\"}}}", headers: headers)
 
       ad_insights = graph.get_object("#{graph_id}/insights", fields: 'ad_id', date_preset: 'lifetime')
@@ -232,7 +233,7 @@ RSpec.describe FakeFbMarketingApi::Application do
     it 'returns the status of the api call' do
       graph_id = Faker::Number.number(10)
       headers = { 'etag' => '423144fb7fd642308ea9666e20cceb65ee4f6650' }
-      stub_request(:get, "https://graph.facebook.com/v3.2/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id")
+      stub_request(:get, "https://graph.facebook.com/v3.3/#{graph_id}/insights?access_token=#{access_token}&date_preset=lifetime&fields=ad_id")
         .to_return(status: 400, body: "{\"error\":{\"message\":\"(#100) date_preset must be \",\"type\":\"OAuthException\",\"code\":100,\"fbtrace_id\":\"GB8SawFk\/47\"}}", headers: headers)
 
       expect do
@@ -246,7 +247,7 @@ RSpec.describe FakeFbMarketingApi::Application do
       graph_id = Faker::Number.number(10)
       json = File.open("#{Dir.pwd}/spec/fb_batch_response.json").read
       json.gsub!('replace_ad_id', graph_id)
-      stub_request(:post, "https://graph.facebook.com/v3.2/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22#{graph_id}/insights?date_preset=lifetime%26fields=ad_id%22%7D,%7B%22method%22:%22get%22,%22relative_url%22:%22#{graph_id}/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D")
+      stub_request(:post, "https://graph.facebook.com/v3.3/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22#{graph_id}/insights?date_preset=lifetime%26fields=ad_id%22%7D,%7B%22method%22:%22get%22,%22relative_url%22:%22#{graph_id}/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D")
         .to_return(status: 200, body: json, headers: {})
 
       result = graph.batch do |batch|
@@ -261,7 +262,7 @@ RSpec.describe FakeFbMarketingApi::Application do
       graph_id = Faker::Number.number(10)
       json = File.open("#{Dir.pwd}/spec/fb_batch_error_response.json").read
       json.gsub!('replace_ad_id', graph_id)
-      stub_request(:post, "https://graph.facebook.com/v3.2/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D,%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D").
+      stub_request(:post, "https://graph.facebook.com/v3.3/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D,%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D").
         # stub_request(:get, "https://graph.facebook.com/v3.0/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22#{graph_id}/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D").
         to_return(status: 200, body: json)
 
@@ -278,11 +279,11 @@ RSpec.describe FakeFbMarketingApi::Application do
       graph_id = Faker::Number.number(10)
       json = File.open("#{Dir.pwd}/spec/fb_batch_error_response.json").read
       json.gsub!('replace_ad_id', graph_id)
-      stub_request(:post, "https://graph.facebook.com/v3.2/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D,%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D")
+      stub_request(:post, "https://graph.facebook.com/v3.3/?access_token=#{access_token}&batch=%5B%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D,%7B%22method%22:%22get%22,%22relative_url%22:%22doesnotexist/insights?date_preset=lifetime%26fields=ad_id%22%7D%5D")
         .to_return(status: 200,
                    body: json,
                    headers: { 'Content-Type' => 'text/javascript; charset=UTF-8',
-                              'Facebook-API-Version' => 'v3.2',
+                              'Facebook-API-Version' => 'v3.3',
                               'X-App-Usage' => '{"call_count":0,"total_cputime":0,"total_time":0}',
                               'ETag' => '9d4067db4e21a79fc53d45e0f487e67c5c0b50a1',
                               'Access-Control-Allow-Origin' => '*',
@@ -307,7 +308,7 @@ RSpec.describe FakeFbMarketingApi::Application do
   describe 'POST /:ad_set_id' do
     it 'passes through requests to pause an ad' do
       graph_id = Faker::Number.number(10)
-      stub_request(:post, "https://graph.facebook.com/v3.2/#{graph_id}/?access_token=#{access_token}&status=PAUSED")
+      stub_request(:post, "https://graph.facebook.com/v3.3/#{graph_id}/?access_token=#{access_token}&status=PAUSED")
         .to_return(status: 200, body: { success: true }.to_json, headers: {})
 
       result = graph.put_connections(graph_id, '', status: 'PAUSED')
@@ -320,7 +321,7 @@ RSpec.describe FakeFbMarketingApi::Application do
     it 'gets graph objects' do
       graph_id = Faker::Number.number(10)
       json = File.open("#{Dir.pwd}/spec/fb_graph_object_response.json").read
-      stub_request(:get, "https://graph.facebook.com/v3.2/?access_token=#{access_token}&fields=og_object%7Btitle,description,image%7D&id=https://fox2now.com/2018/04/02/5-myths-about-organ-donation/")
+      stub_request(:get, "https://graph.facebook.com/v3.3/?access_token=#{access_token}&fields=og_object%7Btitle,description,image%7D&id=https://fox2now.com/2018/04/02/5-myths-about-organ-donation/")
         .to_return(
           status: 200,
           body: json,
