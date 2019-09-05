@@ -44,48 +44,6 @@ module FakeFbMarketingApi
         proxy_post_to_fb(request, response)
       end
 
-      post '/:ad_account_id/campaigns' do
-        content_type :json
-        case params[:objective]
-        when 'BRAND_AWARENESS'
-          {
-            id: ENV['BRAND_AWARENESS_CAMPAIGN_ID']
-          }.to_json
-        when 'LINK_CLICKS'
-          {
-            id: ENV['LINK_CLICKS_CAMPAIGN_ID']
-          }.to_json
-        when 'VIDEO_VIEWS'
-          {
-            id: ENV['VIDEO_VIEWS_CAMPAIGN_ID']
-          }.to_json
-        when 'REACH'
-          {
-            id: ENV['REACH_CAMPAIGN_ID']
-          }.to_json
-        when 'POST_ENGAGEMENT'
-          {
-            id: ENV['POST_ENGAGEMENT_CAMPAIGN_ID']
-          }.to_json
-        when 'PAGE_LIKES'
-          {
-            id: ENV['PAGE_LIKES_CAMPAIGN_ID']
-          }.to_json
-        when 'CONVERSIONS_COUNT'
-          {
-            id: ENV['CONVERSIONS_COUNT_CAMPAIGN_ID']
-          }.to_json
-        when 'CONVERSIONS_FUNDRAISE'
-          {
-            id: ENV['CONVERSIONS_FUNDRAISE_CAMPAIGN_ID']
-          }.to_json
-        when 'CONVERSIONS'
-          {
-            id: ENV['CONVERSIONS_CAMPAIGN_ID']
-          }.to_json
-        end
-      end
-
       get '/:graph_id/*' do
         content_type :json
         proxy_get_to_fb(request, response)
