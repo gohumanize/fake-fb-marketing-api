@@ -44,7 +44,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'pry-byebug'
   gem.add_development_dependency 'pry-stack_explorer'
   gem.add_development_dependency 'rack-test', '~> 1.0'
-  gem.add_development_dependency 'rake', '~> 10.0'
+  gem.add_development_dependency 'rake', '~> 13.0'
   gem.add_development_dependency 'rspec', '~> 3.0'
   gem.add_development_dependency 'webmock'
   gem.add_runtime_dependency 'sinatra', '~> 2.0'
